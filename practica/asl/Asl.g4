@@ -38,21 +38,34 @@ program : function+ EOF
 
 // A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID '(' ')' declarations statements ENDFUNC
+        : FUNC ID '(' parameters ')' (':' type)? declarations statements ENDFUNC
         ;
 
 declarations
         : (variable_decl)*
         ;
-
-variable_decl
-        : VAR ID ':' type
+        
+parameters
+        : (parameter_decl (COMMA parameter_decl)* | )
+        ;
+        
+parameter_decl
+        : ID ':' type
         ;
 
-type    : INT       //# int
+variable_decl
+        : VAR ID (COMMA ID)* ':' type
+        ;
+
+type    : basic_type
+        | ARRAY LCLAU INTVAL RCLAU OF basic_type //#array
+        ;
+        
+basic_type  
+        : INT       //# int
         | BOOL      //# bool
         | FLOAT     //# float
-        | CHAR      //# char
+        | CHAR
         ;
 
 statements
@@ -65,8 +78,12 @@ statement
         : left_expr ASSIGN expr ';'           # assignStmt
           // if-then-else statement (else is optional)
         | IF expr THEN statements ENDIF       # ifStmt
+          // while-do-endwhile statement
+        | WHILE expr DO statements ENDWHILE   # whileStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | ident '(' ')' ';'                   # procCall
+        | ident '(' (expr (COMMA expr)* | )  ')' ';' # procCall
+          // Return statement
+        | RETURN expr? ';'                    # returnStmt
           // Read a variable
         | READ left_expr ';'                  # readStmt
           // Write an expression
@@ -76,11 +93,12 @@ statement
         ;
 // Grammar for left expressions (l-values in C++)
 left_expr
-        : ident
+        : ident (LCLAU expr RCLAU)?
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    : '(' expr ')'                        # parenthesis
+        | ident LCLAU expr RCLAU              # arrayAccess
         | op=(NOT|SUB|PLUS) expr              # unary
         | expr op=(MUL|DIV|MOD) expr          # arithmetic
         | expr op=(PLUS|SUB) expr             # arithmetic
@@ -91,6 +109,7 @@ expr    : '(' expr ')'                        # parenthesis
         | CHARVAL                             # value
         | FLOATVAL                            # value
         | BOOLVAL                             # value
+        | ident '(' (expr (COMMA expr)* | ) ')' # funcIdent
         | ident                               # exprIdent
         ;
 
@@ -113,25 +132,34 @@ LT        : '<' ;
 GT        : '>' ;
 GEQ       : '>=' ;
 LEQ       : '<=' ;
+COMMA     : ',' ;
+LCLAU     : '[' ;
+RCLAU     : ']' ;
 AND       : 'and';
 OR        : 'or';
 NOT       : 'not';
 VAR       : 'var';
+ARRAY     : 'array' ;
+OF        : 'of' ;
 INT       : 'int';
 BOOL      : 'bool';
 FLOAT     : 'float';
 CHAR      : 'char';
 IF        : 'if' ;
+WHILE     : 'while' ;
+DO        : 'do' ;
 THEN      : 'then' ;
 ELSE      : 'else' ;
 ENDIF     : 'endif' ;
+ENDWHILE  : 'endwhile' ;
 FUNC      : 'func' ;
 ENDFUNC   : 'endfunc' ;
+RETURN    : 'return' ;
 READ      : 'read' ;
 WRITE     : 'write' ;
+BOOLVAL   : TRUE | FALSE;
 TRUE      : 'true' ;
 FALSE     : 'false';
-BOOLVAL   : TRUE | FALSE;
 ID        : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+;

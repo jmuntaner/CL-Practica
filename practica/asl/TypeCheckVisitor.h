@@ -69,14 +69,18 @@ public:
   antlrcpp::Any visitStatements(AslParser::StatementsContext *ctx);
   antlrcpp::Any visitAssignStmt(AslParser::AssignStmtContext *ctx);
   antlrcpp::Any visitIfStmt(AslParser::IfStmtContext *ctx);
+  antlrcpp::Any visitWhileStmt(AslParser::WhileStmtContext *ctx);
   antlrcpp::Any visitProcCall(AslParser::ProcCallContext *ctx);
+  antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *ctx);
   antlrcpp::Any visitReadStmt(AslParser::ReadStmtContext *ctx);
   antlrcpp::Any visitWriteExpr(AslParser::WriteExprContext *ctx);
   // antlrcpp::Any visitWriteString(AslParser::WriteStringContext *ctx);
   antlrcpp::Any visitLeft_expr(AslParser::Left_exprContext *ctx);
   antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *ctx);
+  antlrcpp::Any visitFuncIdent(AslParser::FuncIdentContext *ctx);
   antlrcpp::Any visitBoolean(AslParser::BooleanContext *ctx);
   antlrcpp::Any visitArithmetic(AslParser::ArithmeticContext *ctx);
+  antlrcpp::Any visitArrayAccess(AslParser::ArrayAccessContext *ctx);
   antlrcpp::Any visitRelational(AslParser::RelationalContext *ctx);
   antlrcpp::Any visitValue(AslParser::ValueContext *ctx);
   antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);

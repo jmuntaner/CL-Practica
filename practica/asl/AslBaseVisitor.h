@@ -27,11 +27,23 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitParameters(AslParser::ParametersContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitParameter_decl(AslParser::Parameter_declContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitVariable_decl(AslParser::Variable_declContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual antlrcpp::Any visitType(AslParser::TypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitBasic_type(AslParser::Basic_typeContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -47,7 +59,15 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitWhileStmt(AslParser::WhileStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitProcCall(AslParser::ProcCallContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -67,6 +87,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitFuncIdent(AslParser::FuncIdentContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitBoolean(AslParser::BooleanContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -80,6 +104,10 @@ public:
   }
 
   virtual antlrcpp::Any visitRelational(AslParser::RelationalContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitArrayAccess(AslParser::ArrayAccessContext *ctx) override {
     return visitChildren(ctx);
   }
 
