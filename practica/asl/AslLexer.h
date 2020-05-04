@@ -1,5 +1,5 @@
 
-// Generated from Asl.g4 by ANTLR 4.7.1
+// Generated from Asl.g4 by ANTLR 4.7.2
 
 #pragma once
 
@@ -16,10 +16,11 @@ public:
     PLUS = 8, SUB = 9, MUL = 10, DIV = 11, MOD = 12, LT = 13, GT = 14, GEQ = 15, 
     LEQ = 16, COMMA = 17, LCLAU = 18, RCLAU = 19, AND = 20, OR = 21, NOT = 22, 
     VAR = 23, ARRAY = 24, OF = 25, INT = 26, BOOL = 27, FLOAT = 28, CHAR = 29, 
-    IF = 30, WHILE = 31, DO = 32, THEN = 33, ELSE = 34, ENDIF = 35, ENDWHILE = 36, 
-    FUNC = 37, ENDFUNC = 38, RETURN = 39, READ = 40, WRITE = 41, BOOLVAL = 42, 
-    TRUE = 43, FALSE = 44, ID = 45, INTVAL = 46, FLOATVAL = 47, CHARVAL = 48, 
-    STRING = 49, COMMENT = 50, WS = 51
+    IF = 30, WHILE = 31, FOR = 32, IN = 33, RANGE = 34, DO = 35, THEN = 36, 
+    ELSE = 37, ENDIF = 38, ENDWHILE = 39, ENDFOR = 40, FUNC = 41, ENDFUNC = 42, 
+    RETURN = 43, READ = 44, WRITE = 45, MAX = 46, BOOLVAL = 47, TRUE = 48, 
+    FALSE = 49, ID = 50, INTVAL = 51, FLOATVAL = 52, CHARVAL = 53, STRING = 54, 
+    COMMENT = 55, WS = 56
   };
 
   AslLexer(antlr4::CharStream *input);

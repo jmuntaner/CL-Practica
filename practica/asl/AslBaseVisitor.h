@@ -1,5 +1,5 @@
 
-// Generated from Asl.g4 by ANTLR 4.7.1
+// Generated from Asl.g4 by ANTLR 4.7.2
 
 #pragma once
 
@@ -63,6 +63,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitForStmt(AslParser::ForStmtContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitProcCall(AslParser::ProcCallContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -92,6 +96,10 @@ public:
   }
 
   virtual antlrcpp::Any visitBoolean(AslParser::BooleanContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitMax(AslParser::MaxContext *ctx) override {
     return visitChildren(ctx);
   }
 

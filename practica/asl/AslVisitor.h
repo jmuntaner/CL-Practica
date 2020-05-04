@@ -1,5 +1,5 @@
 
-// Generated from Asl.g4 by ANTLR 4.7.1
+// Generated from Asl.g4 by ANTLR 4.7.2
 
 #pragma once
 
@@ -43,6 +43,8 @@ public:
 
     virtual antlrcpp::Any visitWhileStmt(AslParser::WhileStmtContext *context) = 0;
 
+    virtual antlrcpp::Any visitForStmt(AslParser::ForStmtContext *context) = 0;
+
     virtual antlrcpp::Any visitProcCall(AslParser::ProcCallContext *context) = 0;
 
     virtual antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *context) = 0;
@@ -58,6 +60,8 @@ public:
     virtual antlrcpp::Any visitFuncIdent(AslParser::FuncIdentContext *context) = 0;
 
     virtual antlrcpp::Any visitBoolean(AslParser::BooleanContext *context) = 0;
+
+    virtual antlrcpp::Any visitMax(AslParser::MaxContext *context) = 0;
 
     virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *context) = 0;
 

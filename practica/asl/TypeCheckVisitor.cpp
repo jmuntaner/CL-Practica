@@ -148,7 +148,13 @@ antlrcpp::Any TypeCheckVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
   if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
     Errors.booleanRequired(ctx);
-  visit(ctx->statements());
+  if(ctx->ELSE()) {
+      visit(ctx->statements(0));
+      visit(ctx->statements(1));
+  }
+  else {
+      visit(ctx->statements(0));
+  }
   DEBUG_EXIT();
   return 0;
 }
@@ -159,6 +165,30 @@ antlrcpp::Any TypeCheckVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx)
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr());
   if ((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1)))
     Errors.booleanRequired(ctx);
+  visit(ctx->statements());
+  DEBUG_EXIT();
+  return 0;
+}
+
+antlrcpp::Any TypeCheckVisitor::visitForStmt(AslParser::ForStmtContext *ctx) {
+  DEBUG_ENTER();
+  int nRange = ctx->expr().size();
+  if(nRange == 0 or nRange > 3) {
+      Errors.numberOfRangeExpressions(ctx);
+  }
+  for(int i = 0; i < nRange; ++i) {
+      visit(ctx->expr(i));
+  }
+  visit(ctx->ident());
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  if ((not Types.isErrorTy(t1)) and (not Types.isIntegerTy(t1)))
+    Errors.forRequireIntegerVar(ctx->ident());
+  TypesMgr::TypeId t;
+  for(int i = 0; i < nRange; ++i) {
+      t = getTypeDecor(ctx->expr(i));
+      if ((not Types.isErrorTy(t)) and (not Types.isIntegerTy(t)))
+        Errors.forRequireIntegerExpr(ctx->expr(i));
+  }
   visit(ctx->statements());
   DEBUG_EXIT();
   return 0;
@@ -183,7 +213,7 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
         visit(ctx->expr(i));
         TypesMgr::TypeId tParam = getTypeDecor(ctx->expr(i));
         TypesMgr::TypeId tCheck = Types.getParameterType(t1, i);
-        if(not Types.copyableTypes(tCheck,tParam)) {
+        if((not Types.copyableTypes(tCheck,tParam)) and (not Types.isErrorTy(tParam))) {
           Errors.incompatibleParameter(ctx->expr(i),i+1,ctx->ident());
         }
       }
@@ -325,6 +355,49 @@ antlrcpp::Any TypeCheckVisitor::visitArrayAccess(AslParser::ArrayAccessContext *
   return 0;
 }
 
+antlrcpp::Any TypeCheckVisitor::visitMax(AslParser::MaxContext *ctx) {
+  DEBUG_ENTER();
+  int nParams = ctx->expr().size();
+  bool charv = 0;
+  bool floatv = 0;
+  bool numericv = 0;
+  TypesMgr::TypeId t;
+  for(int i = 0; i < nParams; i++) {
+    visit(ctx->expr(i));
+  }
+  if(nParams < 2) {
+      Errors.numberOfMaxArguments(ctx);
+      t = Types.createErrorTy();
+  }
+  else {
+      TypesMgr::TypeId t1;
+      for(int i = 0; i < nParams; i++) {
+        t1 = getTypeDecor(ctx->expr(i));
+        if(Types.isNumericTy(t1)) numericv = 1;
+        if(Types.isFloatTy(t1)) floatv = 1;
+        if(Types.isCharacterTy(t1)) charv = 1;
+      }
+      if((numericv and charv) or (!numericv and !charv)) {
+          Errors.incompatibleMaxArguments(ctx);
+          t = Types.createErrorTy();
+      }
+      else if(charv) {
+          t = Types.createCharacterTy();
+      }
+      else if(floatv) {
+          t = Types.createFloatTy();
+      }
+      else {
+          t = Types.createIntegerTy();
+      }
+  }
+  //t = getTypeDecor(ctx->expr(0));
+  putTypeDecor(ctx, t);
+  putIsLValueDecor(ctx, false);
+  DEBUG_EXIT();
+  return 0;
+}
+
 antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->expr(0));
@@ -388,7 +461,7 @@ antlrcpp::Any TypeCheckVisitor::visitFuncIdent(AslParser::FuncIdentContext *ctx)
     TypesMgr::TypeId t = Types.createErrorTy();
     putTypeDecor(ctx, t);
   }
-  else {
+  else if (Types.isFunctionTy(t1)){
     uint nParams = ctx->expr().size();
     for(uint i = 0; i < nParams; ++i)
       visit(ctx->expr(i));
@@ -401,7 +474,7 @@ antlrcpp::Any TypeCheckVisitor::visitFuncIdent(AslParser::FuncIdentContext *ctx)
         //visit(ctx->expr(i));
         TypesMgr::TypeId tParam = getTypeDecor(ctx->expr(i));
         TypesMgr::TypeId tCheck = Types.getParameterType(t1, i);
-        if(not Types.copyableTypes(tCheck,tParam)) {
+        if(not Types.copyableTypes(tCheck,tParam) and (not Types.isErrorTy(tParam))) {
           Errors.incompatibleParameter(ctx->expr(i),i+1,ctx->ident());
         }
       }
@@ -425,6 +498,15 @@ antlrcpp::Any TypeCheckVisitor::visitExprIdent(AslParser::ExprIdentContext *ctx)
   putTypeDecor(ctx, t1);
   bool b = getIsLValueDecor(ctx->ident());
   putIsLValueDecor(ctx, b);
+  DEBUG_EXIT();
+  return 0;
+}
+
+antlrcpp::Any TypeCheckVisitor::visitUnary(AslParser::UnaryContext *ctx) {
+  DEBUG_ENTER();
+  visit(ctx->expr());
+  TypesMgr::TypeId t = getTypeDecor(ctx->expr());
+  putTypeDecor(ctx, t);
   DEBUG_EXIT();
   return 0;
 }

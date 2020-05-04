@@ -44,11 +44,11 @@ function
 declarations
         : (variable_decl)*
         ;
-        
+
 parameters
         : (parameter_decl (COMMA parameter_decl)* | )
         ;
-        
+
 parameter_decl
         : ID ':' type
         ;
@@ -60,8 +60,8 @@ variable_decl
 type    : basic_type
         | ARRAY LCLAU INTVAL RCLAU OF basic_type //#array
         ;
-        
-basic_type  
+
+basic_type
         : INT       //# int
         | BOOL      //# bool
         | FLOAT     //# float
@@ -77,9 +77,11 @@ statement
           // Assignment
         : left_expr ASSIGN expr ';'           # assignStmt
           // if-then-else statement (else is optional)
-        | IF expr THEN statements ENDIF       # ifStmt
+        | IF expr THEN statements (ELSE statements)? ENDIF  # ifStmt
           // while-do-endwhile statement
         | WHILE expr DO statements ENDWHILE   # whileStmt
+        // while-do-endwhile statement
+        | FOR ident IN RANGE '(' (expr (COMMA expr)* | ) ')' DO statements ENDFOR   # forStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
         | ident '(' (expr (COMMA expr)* | )  ')' ';' # procCall
           // Return statement
@@ -97,7 +99,8 @@ left_expr
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
-expr    : '(' expr ')'                        # parenthesis
+expr    : MAX '(' (expr (COMMA expr)* | ) ')' # max
+        | '(' expr ')'                        # parenthesis
         | ident LCLAU expr RCLAU              # arrayAccess
         | op=(NOT|SUB|PLUS) expr              # unary
         | expr op=(MUL|DIV|MOD) expr          # arithmetic
@@ -147,23 +150,28 @@ FLOAT     : 'float';
 CHAR      : 'char';
 IF        : 'if' ;
 WHILE     : 'while' ;
+FOR       : 'for' ;
+IN        : 'in' ;
+RANGE     : 'range' ;
 DO        : 'do' ;
 THEN      : 'then' ;
 ELSE      : 'else' ;
 ENDIF     : 'endif' ;
 ENDWHILE  : 'endwhile' ;
+ENDFOR    : 'endfor' ;
 FUNC      : 'func' ;
 ENDFUNC   : 'endfunc' ;
 RETURN    : 'return' ;
 READ      : 'read' ;
 WRITE     : 'write' ;
+MAX       : 'max' ;
 BOOLVAL   : TRUE | FALSE;
 TRUE      : 'true' ;
 FALSE     : 'false';
 ID        : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+;
-CHARVAL   : '\'' ( ESC_SEQ | ~('\\'|'\'') )* '\'' ;
+CHARVAL   : '\'' ( ESC_SEQ | ~('\\'|'\'') ) '\'' ;
 
 // Strings (in quotes) with escape sequences
 STRING    : '"' ( ESC_SEQ | ~('\\'|'"') )* '"' ;
