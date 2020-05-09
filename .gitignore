@@ -1,4 +1,10 @@
 *.o
 *.interp
 *.tokens
-
+*.t
+*.txt
+*Asl*.h
+*Asl*.cpp
+/practica/asl/_antlr
+/practica/asl/_deps
+/practica/asl/asl
