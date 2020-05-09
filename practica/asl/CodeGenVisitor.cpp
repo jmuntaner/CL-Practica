@@ -179,13 +179,24 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   //std::string           offs2 = codAtsE2.offs;
   instructionList &     code2 = codAtsE2.code;
   TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
-  //std::string temp = "%"+codeCounters.newTEMP();
   code = code1 || code2;
-  if (offs1 == "") {
-    code = code || instruction::LOAD(addr1, addr2);
+  if(Types.isArrayTy(tid1) and Types.isArrayTy(tid2)) {
+    std::string temp = "%"+codeCounters.newTEMP();
+    std::string tempCounter = "%"+codeCounters.newTEMP();
+    for (int i = 0; i < int(Types.getArraySize(tid2)); ++i) {
+      std::string sIndex = std::to_string(i);
+      code = code || instruction::ILOAD(tempCounter, sIndex) ||
+      instruction::LOADX(temp,addr2,tempCounter) ||
+      instruction::XLOAD(addr1,tempCounter,temp);
+    }
   }
   else {
-      code = code || instruction::XLOAD(addr1, offs1, addr2);
+    if (offs1 == "") {
+      code = code || instruction::LOAD(addr1, addr2);
+    }
+    else {
+        code = code || instruction::XLOAD(addr1, offs1, addr2);
+    }
   }
   DEBUG_EXIT();
   return code;
@@ -417,10 +428,11 @@ antlrcpp::Any CodeGenVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
     instructionList &   codeE = codExpr.code;
     code = codeE || code;
     offs = addrE;
-    if(Symbols.isParameterClass(ctx->ident()->getText())) {
-      code = code || instruction::LOAD(temp, addr);
-      addr = temp;
-    }
+  }
+  TypesMgr::TypeId  t = getTypeDecor(ctx->ident());
+  if(Types.isArrayTy(t) and Symbols.isParameterClass(ctx->ident()->getText())) {
+    code = code || instruction::LOAD(temp, addr);
+    addr = temp;
   }
   CodeAttribs codRes(addr, offs, code);
   DEBUG_EXIT();
@@ -642,7 +654,16 @@ antlrcpp::Any CodeGenVisitor::visitValue(AslParser::ValueContext *ctx) {
 
 antlrcpp::Any CodeGenVisitor::visitExprIdent(AslParser::ExprIdentContext *ctx) {
   DEBUG_ENTER();
-  CodeAttribs && codAts = visit(ctx->ident());
+  CodeAttribs && codId = visit(ctx->ident());
+  std::string         addr = codId.addr;
+  instructionList &   code = codId.code;
+  TypesMgr::TypeId  t = getTypeDecor(ctx->ident());
+  if(Types.isArrayTy(t) and Symbols.isParameterClass(ctx->ident()->getText())) {
+    std::string temp = "%"+codeCounters.newTEMP();
+    code = code || instruction::LOAD(temp, addr);
+    addr = temp;
+  }
+  CodeAttribs codAts(addr, "", code);
   DEBUG_EXIT();
   return codAts;
 }
