@@ -80,7 +80,7 @@ public:
   antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *ctx);
   antlrcpp::Any visitFuncIdent(AslParser::FuncIdentContext *ctx);
   antlrcpp::Any visitBoolean(AslParser::BooleanContext *ctx);
-  antlrcpp::Any visitMax(AslParser::MaxContext *ctx);
+  //antlrcpp::Any visitMax(AslParser::MaxContext *ctx);
   antlrcpp::Any visitParenthesis(AslParser::ParenthesisContext *ctx);
   antlrcpp::Any visitArithmetic(AslParser::ArithmeticContext *ctx);
   antlrcpp::Any visitArrayAccess(AslParser::ArrayAccessContext *ctx);

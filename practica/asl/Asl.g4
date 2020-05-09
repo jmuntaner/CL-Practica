@@ -99,8 +99,8 @@ left_expr
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
-expr    : MAX '(' (expr (COMMA expr)* | ) ')' # max
-        | '(' expr ')'                        # parenthesis
+expr    : //MAX '(' (expr (COMMA expr)* | ) ')' # max
+          '(' expr ')'                        # parenthesis
         | ident LCLAU expr RCLAU              # arrayAccess
         | op=(NOT|SUB|PLUS) expr              # unary
         | expr op=(MUL|DIV|MOD) expr          # arithmetic
@@ -164,7 +164,7 @@ ENDFUNC   : 'endfunc' ;
 RETURN    : 'return' ;
 READ      : 'read' ;
 WRITE     : 'write' ;
-MAX       : 'max' ;
+//MAX       : 'max' ;
 BOOLVAL   : TRUE | FALSE;
 TRUE      : 'true' ;
 FALSE     : 'false';

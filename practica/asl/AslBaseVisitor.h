@@ -99,10 +99,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitMax(AslParser::MaxContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *ctx) override {
     return visitChildren(ctx);
   }

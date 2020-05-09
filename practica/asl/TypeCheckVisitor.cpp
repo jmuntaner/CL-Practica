@@ -355,7 +355,7 @@ antlrcpp::Any TypeCheckVisitor::visitArrayAccess(AslParser::ArrayAccessContext *
   return 0;
 }
 
-antlrcpp::Any TypeCheckVisitor::visitMax(AslParser::MaxContext *ctx) {
+/*antlrcpp::Any TypeCheckVisitor::visitMax(AslParser::MaxContext *ctx) {
   DEBUG_ENTER();
   int nParams = ctx->expr().size();
   bool charv = 0;
@@ -396,7 +396,7 @@ antlrcpp::Any TypeCheckVisitor::visitMax(AslParser::MaxContext *ctx) {
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();
   return 0;
-}
+}*/
 
 antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ctx) {
   DEBUG_ENTER();
