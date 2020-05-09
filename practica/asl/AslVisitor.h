@@ -61,8 +61,6 @@ public:
 
     virtual antlrcpp::Any visitBoolean(AslParser::BooleanContext *context) = 0;
 
-    virtual antlrcpp::Any visitMax(AslParser::MaxContext *context) = 0;
-
     virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *context) = 0;
 
     virtual antlrcpp::Any visitArithmetic(AslParser::ArithmeticContext *context) = 0;
