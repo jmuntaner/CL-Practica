@@ -173,11 +173,12 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   std::string           addr1 = codAtsE1.addr;
   std::string           offs1 = codAtsE1.offs;
   instructionList &     code1 = codAtsE1.code;
-  // TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
+  TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
   CodeAttribs     && codAtsE2 = visit(ctx->expr());
   std::string           addr2 = codAtsE2.addr;
   //std::string           offs2 = codAtsE2.offs;
   instructionList &     code2 = codAtsE2.code;
+  TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
   //std::string temp = "%"+codeCounters.newTEMP();
   code = code1 || code2;
   if (offs1 == "") {
@@ -186,7 +187,6 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   else {
       code = code || instruction::XLOAD(addr1, offs1, addr2);
   }
-  // TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
   DEBUG_EXIT();
   return code;
 }
@@ -628,7 +628,9 @@ antlrcpp::Any CodeGenVisitor::visitValue(AslParser::ValueContext *ctx) {
     code = instruction::FLOAD(temp, ctx->getText());
   }
   else if (ctx->CHARVAL()) {
-    code = instruction::CHLOAD(temp, ctx->getText());
+    std::string s = ctx->getText();
+    int t = int(s.size())-2;
+    code = instruction::CHLOAD(temp, s.substr(1,t));
   }
   else {//if(ctx->INTVAL())
     code = instruction::ILOAD(temp, ctx->getText());
