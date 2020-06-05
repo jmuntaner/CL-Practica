@@ -181,13 +181,22 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
   code = code1 || code2;
   if(Types.isArrayTy(tid1) and Types.isArrayTy(tid2)) {
-    std::string temp = "%"+codeCounters.newTEMP();
-    std::string tempCounter = "%"+codeCounters.newTEMP();
-    for (int i = 0; i < int(Types.getArraySize(tid2)); ++i) {
-      std::string sIndex = std::to_string(i);
-      code = code || instruction::ILOAD(tempCounter, sIndex) ||
-      instruction::LOADX(temp,addr2,tempCounter) ||
-      instruction::XLOAD(addr1,tempCounter,temp);
+    int maxSize = int(Types.getArraySize(tid2));
+    if(maxSize>0) {
+      std::string temp = "%"+codeCounters.newTEMP();
+      std::string tempCounter = "%"+codeCounters.newTEMP();
+      std::string tempAddOne = "%"+codeCounters.newTEMP();
+      std::string tempMaxSize = "%"+codeCounters.newTEMP();
+      std::string label = codeCounters.newLabelWHILE();
+      std::string labelWhile = "while"+label;
+      std::string sIndex = std::to_string(0);
+      std::string one = std::to_string(1);
+      std::string maximumSize = std::to_string(maxSize);
+      code = code || instruction::ILOAD(tempCounter, sIndex) || instruction::ILOAD(tempAddOne, one) ||
+      instruction::ILOAD(tempMaxSize, maximumSize) || instruction::LABEL(labelWhile) ||
+      instruction::LOADX(temp,addr2,tempCounter) || instruction::XLOAD(addr1,tempCounter,temp) ||
+      instruction::ADD(tempCounter,tempCounter,tempAddOne) || instruction::LE(temp,tempMaxSize, tempCounter) ||
+      instruction::FJUMP(temp,labelWhile);
     }
   }
   else {
